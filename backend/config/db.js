@@ -1,11 +1,19 @@
 import mongoose from "mongoose";
 
-const connectDb =async ()=>{
+const connectDb = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URL)
-        console.log("db connected")
+        await mongoose.connect(process.env.MONGO_URI, {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        });
+        console.log("Database connected successfully");
     } catch (error) {
-        console.log("db error")
+        console.error("Database connection error:", error.message);
+        // Retry logic for production
+        if (process.env.NODE_ENV === 'production') {
+            console.log("Retrying connection in 5 seconds...");
+            setTimeout(connectDb, 5000);
+        }
     }
 }
 
